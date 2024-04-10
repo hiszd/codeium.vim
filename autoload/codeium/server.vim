@@ -166,16 +166,15 @@ function! codeium#server#Start(...) abort
           let base_url = config.portal_url
         else
           let base_url = 'https://github.com/Exafunction/codeium/releases/download'
-        endif
-        let base_url = substitute(base_url, '/\+$', '', '')
-        let url = base_url . '/language-server-v' . s:language_server_version . '/language_server_' . bin_suffix . '.gz'
-      else
-        call s:ActuallyStart()
       endif
+      let base_url = substitute(base_url, '/\+$', '', '')
+      let url = base_url . '/language-server-v' . s:language_server_version . '/language_server_' . bin_suffix . '.gz'
     else
-      let s:bin = get(g: , "codeium_bin")
       call s:ActuallyStart()
     endif
+  else
+    let s:bin = get(g: , "codeium_bin")
+    call s:ActuallyStart()
   endif
   
 endfunction
