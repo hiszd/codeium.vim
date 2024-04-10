@@ -27,6 +27,7 @@ endfunction
 augroup codeium
   autocmd!
   autocmd InsertEnter,CursorMovedI,CompleteChanged * call codeium#DebouncedComplete()
+  autocmd BufEnter     * if codeium#Enabled()|call codeium#command#StartLanguageServer()|endif
   autocmd BufEnter     * if mode() =~# '^[iR]'|call codeium#DebouncedComplete()|endif
   autocmd InsertLeave  * call codeium#Clear()
   autocmd BufLeave     * if mode() =~# '^[iR]'|call codeium#Clear()|endif
@@ -61,10 +62,6 @@ endif
 
 call s:SetStyle()
 
-if codeium#Enabled()
-  call codeium#command#StartLanguageServer()
-endif
-
 let s:dir = expand('<sfile>:h:h')
 if getftime(s:dir . '/doc/codeium.txt') > getftime(s:dir . '/doc/tags')
   silent! execute 'helptags' fnameescape(s:dir . '/doc')
@@ -83,6 +80,16 @@ endfun
 
 command! CodeiumDisable :silent! call CodeiumDisable()
 
+function! CodeiumToggle()
+  if exists('g:codeium_enabled') && g:codeium_enabled == v:false
+      call CodeiumEnable()
+  else
+      call CodeiumDisable()
+  endif
+endfunction
+
+command! CodeiumToggle :silent! call CodeiumToggle()
+
 function! CodeiumManual() " Disable the automatic triggering of completions
   let g:codeium_manual = v:true
 endfun
@@ -99,3 +106,4 @@ command! CodeiumAuto :silent! call CodeiumAuto()
 :amenu Plugin.Codeium.Disable\ \Codeium\ \(\:CodeiumDisable\) :call CodeiumDisable() <Esc>
 :amenu Plugin.Codeium.Manual\ \Codeium\ \AI\ \Autocompletion\ \(\:CodeiumManual\) :call CodeiumManual() <Esc>
 :amenu Plugin.Codeium.Automatic\ \Codeium\ \AI\ \Completion\ \(\:CodeiumAuto\) :call CodeiumAuto() <Esc>
+:amenu Plugin.Codeium.Toggle\ \Codeium\ \(\:CodeiumToggle\) :call CodeiumToggle() <Esc>
